@@ -1,17 +1,24 @@
 from . import db
-from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
-class User(UserMixin, db.Model):
+class Dues(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), unique=True, nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
+    fcp_name = db.Column(db.String(100), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    date_paid = db.Column(db.Date, nullable=False, default=datetime.utcnow)
+    month_paid_for = db.Column(db.String(50), nullable=False)
 
-    def set_password(self, password):
-        """Hash and store the password."""
-        self.password_hash = generate_password_hash(password)
+class Claim(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    claim_type = db.Column(db.String(100), nullable=False)
+    beneficiary = db.Column(db.String(100), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    date_filed = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def check_password(self, password):
-        """Check hashed password against the given password."""
-        return check_password_hash(self.password_hash, password)
+class Loan(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    purpose = db.Column(db.String(255), nullable=False)
+    interest_agreed = db.Column(db.Boolean, default=False)
+    date_issued = db.Column(db.DateTime, default=datetime.utcnow)

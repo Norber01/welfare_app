@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Dashboard</h1>
+    <h2>Dues</h2>
+    <ul>
+        {% for due in dues %}
+        <li>{{ due.fcp_name }} - {{ due.amount }} - {{ due.date_paid }} - {{ due.month_paid_for }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Claims</h2>
+    <ul>
+        {% for claim in claims %}
+        <li>{{ claim.claim_type }} - {{ claim.beneficiary }} - {{ claim.amount }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Loans</h2>
+    <ul>
+        {% for loan in loans %}
+        <li>{{ loan.name }} - {{ loan.amount }} - {{ loan.purpose }} - {{ loan.interest_agreement }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

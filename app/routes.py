@@ -1,37 +1,50 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
-from flask_login import login_user, logout_user, login_required, current_user
-from .models import User
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask_login import login_required
+from .models import Dues, Claim, Loan
 from . import db
-from werkzeug.security import check_password_hash
-from sqlalchemy import or_
 
 main = Blueprint('main', __name__)
 
-@main.route('/')
-def home():
-    return "Welcome to the Welfare App!"  # Temporary homepage
-
-@main.route('/register', methods=['GET', 'POST'])
-def register():
+@main.route('/add-dues', methods=['GET', 'POST'])
+@login_required
+def add_dues():
     if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
+        fcp_name = request.form['fcp_name']
+        amount = request.form['amount']
+        date_paid = request.form['date_paid']
+        month_paid_for = request.form['month_paid_for']
+        new_dues = Dues(fcp_name=fcp_name, amount=amount, date_paid=date_paid, month_paid_for=month_paid_for)
+        db.session.add(new_dues)
+        db.session.commit()
+        flash('Dues entry added successfully!', 'success')
+        return redirect(url_for('main.dashboard'))
+    return render_template('add_dues.html')
 
-        # Validate input
-        if not username or not email or not password or not confirm_password:
-            flash('Please fill out all fields.', 'error')
-            return redirect(url_for('main.register'))
+@main.route('/add-claim', methods=['GET', 'POST'])
+@login_required
+def add_claim():
+    if request.method == 'POST':
+        claim_type = request.form['claim_type']
+        beneficiary = request.form['beneficiary']
+        amount = request.form['amount']
+        new_claim = Claim(claim_type=claim_type, beneficiary=beneficiary, amount=amount)
+        db.session.add(new_claim)
+        db.session.commit()
+        flash('Claim submitted successfully!', 'success')
+        return redirect(url_for('main.dashboard'))
+    return render_template('add_claim.html')
 
-        if password != confirm_password:
-            flash('Passwords do not match.', 'error')
-            return redirect(url_for('main.register'))
-
-        # Check if user exists
-        existing_user = User.query.filter(
-            or_(User.username == username, User.email == email)
-        ).first()
-        if existing_user:
-            flash('Username or email already exists.', 'error')
-            return redirect
+@main.route('/add-loan', methods=['GET', 'POST'])
+@login_required
+def add_loan():
+    if request.method == 'POST':
+        name = request.form['name']
+        amount = request.form['amount']
+        purpose = request.form['purpose']
+        interest_agreed = True if request.form.get('interest_agreed') == 'on' else False
+        new_loan = Loan(name=name, amount=amount, purpose=purpose, interest_agreed=interest_agreed)
+        db.session.add(new_loan)
+        db.session.commit()
+        flash('Loan entry added successfully!', 'success')
+        return redirect(url_for('main.dashboard'))
+    return render_template('add_loan.html')

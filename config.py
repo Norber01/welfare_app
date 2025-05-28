@@ -1,4 +1,6 @@
+import os
+
 class Config:
-    SECRET_KEY = '123456789'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///db.sqlite3'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'devkey'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///welfare.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
